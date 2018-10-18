@@ -26,7 +26,7 @@ def list_of_items(items):
     """
     string = ""
     for item in items:
-    	string = string + ", " + item["name"]
+        string = string + ", " + item["name"]
     return(string[2:])
 
 def print_room_items(room):
@@ -197,9 +197,9 @@ def print_menu(exits, room_items, inv_items):
         # Print the exit name and where it leads to
         print_exit(direction, exit_leads_to(exits, direction))
     for item in room_items:
-        print("TAKE " + item["id"] + " to drop your " + item["name"])
+        print("TAKE " + item["id"].upper() + " to take the" + item["name"] + ".")
     for item in inv_items:
-        print("DROP " + item["id"] + " to drop your " + item["name"])
+        print("DROP " + item["id"].upper() + " to drop your " + item["name"] + ".")
 
     #
     # COMPLETE ME!
@@ -233,7 +233,13 @@ def execute_go(direction):
     (and prints the name of the room into which the player is
     moving). Otherwise, it prints "You cannot go there."
     """
-    pass
+    global current_room
+    if is_valid_exit(current_room["exits"], direction):
+         current_room = rooms[current_room["exits"][direction]]
+    else:
+         print("You cannot go there.")
+    print_room(current_room)
+
 
 
 def execute_take(item_id):
@@ -242,15 +248,32 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    pass
-    
 
+    if check_mass == True:
+        for n in current_room["items"]:
+            if n["id"] == item_id:
+                current_room["items"].remove(n)
+                inventory.append(n)
+            else:
+                print("You cannot take that.")
+    else:
+        print("That's too heavy for you to pick up.")
+    print_inventory_items(inventory) 
+
+
+    
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
-    pass
+    for n in inventory:    
+        if n["id"] == item_id:
+            current_room["items"].append(n)
+            inventory.remove(n)
+        else:
+            print("You cannot drop that.")
+    print_inventory_items(inventory)
     
 
 def execute_command(command):
@@ -323,16 +346,23 @@ def move(exits, direction):
     # Next room to go to
     return rooms[exits[direction]]
 
+def check_mass(item_id):
+    carrying = 0
+    for item in inventory:
+        carrying = carrying + item["mass"]
+        if carrying + items[item_id]["mass"] > 3:
+            return False
+        else:
+            return True
+
 
 # This is the entry point of our program
 def main():
 
+    print_room(current_room)
+    print_inventory_items(inventory)
     # Main game loop
-    while True:
-        # Display game status (room description, inventory etc.)
-        print_room(current_room)
-        print_inventory_items(inventory)
-
+    while True:        
         # Show the menu with possible actions and ask the player
         command = menu(current_room["exits"], current_room["items"], inventory)
 
@@ -345,5 +375,4 @@ def main():
 # '__main__' is the name of the scope in which top-level code executes.
 # See https://docs.python.org/3.4/library/__main__.html for explanation
 if __name__ == "__main__":
-    #main()
-    pass
+    main()
