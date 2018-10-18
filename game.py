@@ -5,8 +5,6 @@ from player import *
 from items import *
 from gameparser import *
 
-
-
 def list_of_items(items):
     """This function takes a list of items (see items.py for the definition) and
     returns a comma-separated list of item names (as a string). For example:
@@ -55,7 +53,6 @@ def print_room_items(room):
         print("There is " + list_of_items(room["items"]) + " here.")
         print()
 
-
 def print_inventory_items(items):
     """This function takes a list of inventory items and displays it nicely, in a
     manner similar to print_room_items(). The only difference is in formatting:
@@ -69,7 +66,6 @@ def print_inventory_items(items):
     if inventory != []:
         print("You have " + list_of_items(inventory) + ".")
         print()
-
 
 def print_room(room):
     """This function takes a room as an input and nicely displays its name
@@ -144,7 +140,6 @@ def exit_leads_to(exits, direction):
     """
     return rooms[exits[direction]]["name"]
 
-
 def print_exit(direction, leads_to):
     """This function prints a line of a menu of exits. It takes a direction (the
     name of an exit) and the name of the room into which it leads (leads_to),
@@ -159,7 +154,6 @@ def print_exit(direction, leads_to):
     GO SOUTH to MJ and Simon's room.
     """
     print("GO " + direction.upper() + " to " + leads_to + ".")
-
 
 def print_menu(exits, room_items, inv_items):
     """This function displays the menu of available actions to the player. The
@@ -197,7 +191,7 @@ def print_menu(exits, room_items, inv_items):
         # Print the exit name and where it leads to
         print_exit(direction, exit_leads_to(exits, direction))
     for item in room_items:
-        print("TAKE " + item["id"].upper() + " to take the" + item["name"] + ".")
+        print("TAKE " + item["id"].upper() + " to take the " + item["name"] + ".")
     for item in inv_items:
         print("DROP " + item["id"].upper() + " to drop your " + item["name"] + ".")
 
@@ -206,7 +200,6 @@ def print_menu(exits, room_items, inv_items):
     #
     
     print("What do you want to do?")
-
 
 def is_valid_exit(exits, chosen_exit):
     """This function checks, given a dictionary "exits" (see map.py) and
@@ -226,7 +219,6 @@ def is_valid_exit(exits, chosen_exit):
     """
     return chosen_exit in exits
 
-
 def execute_go(direction):
     """This function, given the direction (e.g. "south") updates the current room
     to reflect the movement of the player if the direction is a valid exit
@@ -238,9 +230,9 @@ def execute_go(direction):
          current_room = rooms[current_room["exits"][direction]]
     else:
          print("You cannot go there.")
+    cls()
     print_room(current_room)
-
-
+    print_inventory_items(inventory)      
 
 def execute_take(item_id):
     """This function takes an item_id as an argument and moves this item from the
@@ -249,18 +241,19 @@ def execute_take(item_id):
     "You cannot take that."
     """
 
-    if check_mass == True:
+    if check_mass(item_id) == True:
         for n in current_room["items"]:
             if n["id"] == item_id:
                 current_room["items"].remove(n)
                 inventory.append(n)
+                cls()
+                print("You take the " + n["name"] + ".")
             else:
+                cls()
                 print("You cannot take that.")
     else:
+        cls()
         print("That's too heavy for you to pick up.")
-    print_inventory_items(inventory) 
-
-
     
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
@@ -271,10 +264,10 @@ def execute_drop(item_id):
         if n["id"] == item_id:
             current_room["items"].append(n)
             inventory.remove(n)
-        else:
-            print("You cannot drop that.")
-    print_inventory_items(inventory)
-    
+            cls()
+            print("You drop the " + n["name"] + ".")
+            return
+    print("You can't drop that.")
 
 def execute_command(command):
     """This function takes a command (a list of words as returned by
@@ -308,7 +301,6 @@ def execute_command(command):
     else:
         print("This makes no sense.")
 
-
 def menu(exits, room_items, inv_items):
     """This function, given a dictionary of possible exits from a room, and a list
     of items found in the room and carried by the player, prints the menu of
@@ -329,7 +321,6 @@ def menu(exits, room_items, inv_items):
 
     return normalised_user_input
 
-
 def move(exits, direction):
     """This function returns the room into which the player will move if, from a
     dictionary "exits" of avaiable exits, they choose to move towards the exit
@@ -348,28 +339,40 @@ def move(exits, direction):
 
 def check_mass(item_id):
     carrying = 0
+    for item in current_room["items"]:
+    	if item["id"] == item_id:
+    		item_mass = item["mass"]
     for item in inventory:
         carrying = carrying + item["mass"]
-        if carrying + items[item_id]["mass"] > 3:
-            return False
-        else:
-            return True
+    if carrying + item_mass > 3:
+        return False
+    else:
+        return True
 
+def cls():
+	print("\n" * 100)
 
 # This is the entry point of our program
 def main():
-
+    cls()
+    print(
+    	"""Kirill says to you: "I need you to bring your
+        ID card, a laptop, a pen and some money to reception so I can keep them there
+        with the handbook and the biscuits." """)
     print_room(current_room)
     print_inventory_items(inventory)
     # Main game loop
-    while True:        
+    game_running = True
+    while game_running == True:
         # Show the menu with possible actions and ask the player
         command = menu(current_room["exits"], current_room["items"], inventory)
 
         # Execute the player's command
         execute_command(command)
-
-
+        if len(rooms["Reception"]["items"]) == 6:
+            cls()
+            print("CONGRATULATIONS YOU DID IT!!!")
+            game_running = False
 
 # Are we being run as a script? If so, run main().
 # '__main__' is the name of the scope in which top-level code executes.
