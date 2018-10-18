@@ -338,6 +338,7 @@ def move(exits, direction):
     return rooms[exits[direction]]
 
 def check_mass(item_id):
+    item_mass = 0
     carrying = 0
     for item in current_room["items"]:
     	if item["id"] == item_id:
