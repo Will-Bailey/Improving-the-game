@@ -358,9 +358,9 @@ def cls():
 def main():
     cls()
     print(
-    	"""Kirill says to you: "I need you to bring your
-        ID card, a laptop, a pen and some money to reception so I can keep them there
-        with the handbook and the biscuits." """)
+    """Kirill says to you: "I need you to bring your
+    ID card, a laptop, a pen and some money to reception so I can keep them there
+    with the handbook and the biscuits." """)
     print_room(current_room)
     print_inventory_items(inventory)
     # Main game loop
