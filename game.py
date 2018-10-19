@@ -253,9 +253,14 @@ def execute_take(item_id):
         if printed != True:
             cls()
             print("You cannot take that.")
-    else:
+    elif check_mass(item_id) == False:
         cls()
         print("That's too heavy for you to pick up.")
+    else:
+        cls()
+        print(
+        """Having dropped all your stuff you wonder how the handbook can be so heavy
+        and decide that it's just not possible to move it.""")
     
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
@@ -343,18 +348,20 @@ def move(exits, direction):
 def check_mass(item_id):
     item_mass = 0
     carrying = 0
-    for item in current_room["items"]:
-    	if item["id"] == item_id:
-    		item_mass = item["mass"]
-    for item in inventory:
-        carrying = carrying + item["mass"]
-    if carrying + item_mass > 3:
-        return False
+    if item_id == "handbook" and inventory == []:
+        return("handbook")
     else:
-        return True
+        for item in current_room["items"]:
+            if item["id"] == item_id:
+               item_mass = item["mass"]
+        for item in inventory:
+            carrying = carrying + item["mass"]
+        if carrying + item_mass > 3:
+            return False
+        else:
+            return True
 
-def cls():
-	print("\n" * 100)
+def cls():print("\n" * 100)
 
 # This is the entry point of our program
 def main():
