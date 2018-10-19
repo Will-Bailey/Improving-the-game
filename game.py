@@ -299,6 +299,7 @@ def execute_command(command):
             print("Drop what?")
 
     else:
+        cls()
         print("This makes no sense.")
 
 def menu(exits, room_items, inv_items):
