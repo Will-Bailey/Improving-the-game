@@ -241,6 +241,7 @@ def execute_take(item_id):
     "You cannot take that."
     """
 
+    printed = False
     if check_mass(item_id) == True:
         for n in current_room["items"]:
             if n["id"] == item_id:
@@ -248,9 +249,10 @@ def execute_take(item_id):
                 inventory.append(n)
                 cls()
                 print("You take the " + n["name"] + ".")
-            else:
-                cls()
-                print("You cannot take that.")
+                printed = True
+        if printed != True:
+            cls()
+            print("You cannot take that.")
     else:
         cls()
         print("That's too heavy for you to pick up.")
